@@ -1,154 +1,68 @@
-import React, {useRef, useState} from 'react';
-import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import React, {useState, useRef, useEffect} from 'react';
+import PropTypes from 'prop-types';
+import {View, StatusBar, Text, TouchableOpacity} from 'react-native';
 import {GameEngine} from 'react-native-game-engine';
-import Food from './components/Food';
-import Head from './components/Head';
-import Tail from './components/Tail';
-import Constants from './contants';
-import GameLoop from './systems/GameLoop';
+import {appStyles} from './styles';
+import entities from './entities';
+import Physics from './physics';
 
-export default function App() {
-  const BoardSize = Constants.GRID_SIZE * Constants.CELL_SIZE;
-  const engine = useRef(null);
-  const [isGameRunning, setIsGameRunning] = useState(true);
-  const randomPositions = (min, max) =>
-    Math.floor(Math.random() * (max - min + 1) + min);
-  const resetGame = () => {
-    engine.current.swap({
-      head: {
-        position: [0, 0],
-        size: Constants.CELL_SIZE,
-        updateFrequency: 10,
-        nextMove: 10,
-        xspeed: 0,
-        yspeed: 0,
-        renderer: <Head />,
-      },
-      food: {
-        position: [
-          randomPositions(0, Constants.GRID_SIZE - 1),
-          randomPositions(0, Constants.GRID_SIZE - 1),
-        ],
-        size: Constants.CELL_SIZE,
-        updateFrequency: 10,
-        nextMove: 10,
-        xspeed: 0,
-        yspeed: 0,
-        renderer: <Food />,
-      },
-      tail: {
-        size: Constants.CELL_SIZE,
-        elements: [],
-        renderer: <Tail />,
-      },
-    });
-    setIsGameRunning(true);
-  };
+App.propTypes = {};
+
+function App(props) {
+  const [isRunning, setRunning] = useState(false);
+  const [gameEngine, setGameEngine] = useState(null);
+  const [point, setPoint] = useState(0);
+
+  useEffect(() => {
+    setRunning(false);
+  }, []);
   return (
-    <View style={styles.canvas}>
+    <View style={appStyles.canvas}>
+      <Text style={appStyles.pointText}>{point}</Text>
       <GameEngine
-        ref={engine}
-        style={{
-          width: BoardSize,
-          height: BoardSize,
-          flex: null,
-          backgroundColor: 'white',
+        ref={ref => {
+          setGameEngine(ref);
         }}
-        entities={{
-          head: {
-            position: [0, 0],
-            size: Constants.CELL_SIZE,
-            updateFrequency: 10,
-            nextMove: 10,
-            xspeed: 0,
-            yspeed: 0,
-            renderer: <Head />,
-          },
-          food: {
-            position: [
-              randomPositions(0, Constants.GRID_SIZE - 1),
-              randomPositions(0, Constants.GRID_SIZE - 1),
-            ],
-            size: Constants.CELL_SIZE,
-            renderer: <Food />,
-          },
-          tail: {
-            size: Constants.CELL_SIZE,
-            elements: [],
-            renderer: <Tail />,
-          },
-        }}
-        systems={[GameLoop]}
-        running={isGameRunning}
+        style={appStyles.gameEngineStyle}
+        systems={[Physics]}
+        running={isRunning}
         onEvent={e => {
           // eslint-disable-next-line default-case
-          switch (e) {
-            case 'game-over':
-              alert('Game over!');
-              setIsGameRunning(false);
+          switch (e.type) {
+            case 'game_over':
+              setRunning(false);
+              gameEngine.stop();
+              setPoint(0);
+              break;
+            case 'new_point':
+              setPoint(point + 1);
+              break;
           }
         }}
+        entities={entities()}
       />
-      <View style={styles.controlContainer}>
-        <View style={styles.controllerRow}>
-          <TouchableOpacity onPress={() => engine.current.dispatch('move-up')}>
-            <View style={styles.controlBtn} />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.controllerRow}>
+      <StatusBar hidden />
+      {!isRunning ? (
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
           <TouchableOpacity
-            onPress={() => engine.current.dispatch('move-left')}>
-            <View style={styles.controlBtn} />
-          </TouchableOpacity>
-          <View style={[styles.controlBtn, {backgroundColor: null}]} />
-          <TouchableOpacity
-            onPress={() => engine.current.dispatch('move-right')}>
-            <View style={styles.controlBtn} />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.controllerRow}>
-          <TouchableOpacity
-            onPress={() => engine.current.dispatch('move-down')}>
-            <View style={styles.controlBtn} />
-          </TouchableOpacity>
-        </View>
-      </View>
-      {!isGameRunning && (
-        <TouchableOpacity onPress={resetGame}>
-          <Text
             style={{
-              color: 'white',
-              marginTop: 15,
-              fontSize: 22,
-              padding: 10,
-              backgroundColor: 'grey',
-              borderRadius: 10,
+              backgroundColor: 'black',
+              paddingHorizontal: 30,
+              paddingVertical: 10,
+            }}
+            onPress={() => {
+              setPoint(0);
+              setRunning(true);
+              gameEngine.swap(entities());
             }}>
-            Start New Game
-          </Text>
-        </TouchableOpacity>
-      )}
+            <Text style={{fontWeight: 'bold', color: 'white', fontSize: 30}}>
+              START GAME
+            </Text>
+          </TouchableOpacity>
+        </View>
+      ) : null}
     </View>
   );
 }
-const styles = StyleSheet.create({
-  canvas: {
-    flex: 1,
-    backgroundColor: '#000000',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  controlContainer: {
-    marginTop: 10,
-  },
-  controllerRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  controlBtn: {
-    backgroundColor: 'yellow',
-    width: 100,
-    height: 100,
-  },
-});
+
+export default App;

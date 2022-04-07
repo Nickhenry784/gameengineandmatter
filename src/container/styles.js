@@ -1,7 +1,4 @@
 import {StyleSheet} from 'react-native';
-import contants from './contants';
-
-const BoardSize = contants.GRID_SIZE * contants.CELL_SIZE;
 
 export const appStyles = StyleSheet.create({
   canvas: {
@@ -11,30 +8,17 @@ export const appStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   gameEngineStyle: {
-    width: BoardSize,
-    height: BoardSize,
-    flex: null,
-    backgroundColor: 'white',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  pointText: {
+    position: 'absolute',
+    fontWeight: 'bold',
+    fontSize: 50,
+    color: 'black',
+    top: 10,
   },
 });
-
-export const headSnakeStyle = (position, size) =>
-  StyleSheet.create({
-    width: size,
-    height: size,
-    backgroundColor: 'red',
-    position: 'absolute',
-    left: position[0] * size,
-    top: position[1] * size,
-  });
-
-export const FoodStyle = (position, size) =>
-  StyleSheet.create({
-    width: size,
-    height: size,
-    backgroundColor: 'blue',
-    position: 'absolute',
-    left: position[0] * size,
-    top: position[1] * size,
-    borderRadius: 2,
-  });
