@@ -13,13 +13,11 @@ export default restart => {
 
   const {world} = engine;
 
-  engine.gravity.y = 1;
+  engine.gravity.y = 0.1;
 
-  const pipeRandom = getPipeRandom(100);
+  const pipeRandom = getPipeRandom(0);
 
-  const pipeRandom1 = getPipeRandom(
-    getRandom(windowWidth * 0.7, windowWidth * 1.1),
-  );
+  const pipeRandom1 = getPipeRandom(-100);
 
   return {
     physics: {engine, world},
@@ -27,10 +25,9 @@ export default restart => {
     Bird: ObjectBird(
       world,
       'Bird',
-      false,
-      'green',
-      {x: 150, y: windowHeight - 160},
-      {height: 20, width: 20},
+      'blue',
+      {x: windowWidth / 2, y: 500},
+      {height: 100, width: 20},
     ),
 
     Octable1: ObjectOctable(
@@ -46,12 +43,6 @@ export default restart => {
       'green',
       pipeRandom1.pipe.pos,
       pipeRandom1.pipe.size,
-    ),
-    Floor: ObjectFloor(
-      world,
-      'blue',
-      {x: windowWidth / 2, y: windowHeight},
-      {height: 300, width: windowWidth},
     ),
   };
 };

@@ -3,7 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {View} from 'react-native';
 
-function Circle({color, body, pos, status}) {
+function Circle({color, body, pos}) {
   const widthBody = body.bounds.max.x - body.bounds.min.x;
   const heightBody = body.bounds.max.y - body.bounds.min.y;
 
@@ -14,8 +14,7 @@ function Circle({color, body, pos, status}) {
     <View
       style={{
         borderWidth: 1,
-        borderColor: status ? null : color,
-        backgroundColor: status ? color : null,
+        backgroundColor: color,
         borderStyle: 'solid',
         position: 'absolute',
         left: xBody,
@@ -31,16 +30,15 @@ Circle.propTypes = {
   color: PropTypes.string,
   pos: PropTypes.object,
   body: PropTypes.object,
-  status: PropTypes.bool,
 };
 
-function CircleObject(world, name, status, color, pos, size) {
+function CircleObject(world, name, color, pos, size) {
   const initialBird = Matter.Bodies.rectangle(
     pos.x,
     pos.y,
     size.width,
     size.height,
-    {label: name, isStatic: status},
+    {label: name, isStatic: true},
   );
 
   Matter.World.add(world, initialBird);

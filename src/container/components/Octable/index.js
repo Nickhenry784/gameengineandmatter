@@ -38,7 +38,7 @@ function ObjectOctable(world, name, color, pos, size) {
     pos.y,
     size.width,
     size.height,
-    {label: name, isStatic: true},
+    {label: name},
   );
   Matter.World.add(world, initialBird);
 

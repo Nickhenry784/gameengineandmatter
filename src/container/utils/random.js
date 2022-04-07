@@ -7,19 +7,12 @@ export const getRandom = (min, max) =>
   Math.floor(Math.random() * (max - min + 1) + min);
 
 export const getPipeRandom = (addToPosX = 0) => {
-  const randomHeight = getRandom(400, 900);
+  const randomHeight = getRandom(100, 200);
 
   const pipe = {
-    pos: {x: windowWidth / 2 + addToPosX, y: windowHeight},
+    pos: {x: getRandom(addToPosX, windowWidth), y: 0 - getRandom(100, 300)},
     size: {height: randomHeight, width: 20},
   };
-  const earn = {
-    pos: {
-      x: windowWidth / 2 + getRandom(addToPosX * 2, addToPosX * 3),
-      y: windowHeight - 160,
-    },
-    size: {height: 5, width: 5},
-  };
 
-  return {pipe, earn};
+  return {pipe};
 };
